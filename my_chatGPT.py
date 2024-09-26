@@ -7,21 +7,38 @@ st.title("My ChatGPT!")
 # Initialize OpenAI client
 client = OpenAI()
 
-
 # Helper function to initialize session state
 def init_session_state():
     if "openai_model" not in st.session_state:
         st.session_state["openai_model"] = "gpt-4o-mini"
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
+    # Flag to check if the "Kapur" message was sent
+    if "kapur_init" not in st.session_state:
+        st.session_state["kapur_init"] = False
 
+# Function to send the hidden "Your name is Kapur" message
+def send_kapur_message():
+    if not st.session_state["kapur_init"]:
+        # Hidden message that tells the model its name is Kapur
+        st.session_state.messages.append(
+            {"role": "system", "content": "Your name is Kapur"}
+        )
+        # Send this hidden message to ChatGPT
+        _ = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=st.session_state.messages,
+            stream=False,
+        )
+        # Set the flag to True so this is only done once
+        st.session_state["kapur_init"] = True
 
 # Function to render chat messages
 def render_chat():
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
-
+        if message["role"] != "system":  # Skip rendering system messages
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
 
 # Function to get assistant response and stream it
 def get_assistant_response():
@@ -42,9 +59,11 @@ def get_assistant_response():
         st.error(f"Error fetching response: {e}")
         return None
 
-
 # Initialize session state variables
 init_session_state()
+
+# Send the hidden "Your name is Kapur" message
+send_kapur_message()
 
 # Render chat messages
 render_chat()

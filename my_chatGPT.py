@@ -2,7 +2,7 @@ import streamlit as st
 from openai import OpenAI
 
 # Title for the app
-st.title("My ChatGPT!")
+st.title("Welcome to KapurGPT 😎")
 
 # Initialize OpenAI client
 client = OpenAI()
@@ -22,7 +22,7 @@ def send_kapur_message():
     if not st.session_state["kapur_init"]:
         # Hidden message that tells the model its name is Kapur
         st.session_state.messages.append(
-            {"role": "system", "content": "Your name is Kapur"}
+            {"role": "system", "content": "Your name is Kapur and you are a cool, sassy assistant."}
         )
         # Send this hidden message to ChatGPT
         _ = client.chat.completions.create(
